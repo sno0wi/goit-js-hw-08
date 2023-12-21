@@ -64,21 +64,64 @@ const images = [
   },
 ];
 
+let instance;
+
 const gallery = document.querySelector('.gallery');
+gallery.innerHTML = createMarkup(images);
 
-images.forEach(({ preview, original, description }) => {
-    const galleryItem = document.createElement('li');
-    galleryItem.classList.add('gallery-item');
+gallery.addEventListener('click', showLargeImg);
 
-    galleryItem.innerHTML = `
-      <a class="gallery-link" href="${original}">
-        <img class="gallery-image" src="${preview}" data-source="${original}" alt="${description}" />
-      </a>
-    `;
+function addEventListenerToDocument() {
+  document.addEventListener('keydown', closeModal);
+}
 
-    galleryItem.addEventListener('click', event => {
-        event.preventDefault();
-    })
+function removeEventListenerFromDocument() {
+  document.removeEventListener('keydown', closeModal);
+}
 
-    gallery.appendChild(galleryItem)
-})
+function closeModal(event) {
+  if (event.key === 'Escape' && instance) {
+    removeEventListenerFromDocument();
+    instance.close();
+  }
+}
+
+function showLargeImg(event) {
+  event.preventDefault();
+  if (event.target === event.currentTarget) {
+    return;
+  }
+
+  const liEl = event.target.closest(".gallery-link");
+
+  if (!liEl) {
+    return;
+  }
+
+  const original = liEl.getAttribute("href");
+  const description = liEl.querySelector("img").getAttribute("alt");
+
+  instance = basicLightbox.create(`
+    <div class="modal">
+      <img src="${original}" alt="${description}">
+    </div>
+  `);
+
+  instance.show();
+
+  addEventListenerToDocument();
+}
+
+
+function createMarkup(arr) {
+  return arr
+    .map(
+      ({ preview, original, description }) => `
+  <li class="gallery-item">
+    <a class="gallery-link" href="${original}">
+         <img class="gallery-image" src="${preview}" data-source="${original}" alt="${description}" />
+    </a>
+  </li>
+  `)
+    .join("");
+}
