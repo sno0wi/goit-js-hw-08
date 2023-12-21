@@ -88,9 +88,6 @@ function closeModal(event) {
 
 function showLargeImg(event) {
   event.preventDefault();
-  if (event.target === event.currentTarget) {
-    return;
-  }
 
   const liEl = event.target.closest(".gallery-link");
 
