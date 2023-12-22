@@ -63,62 +63,62 @@ const images = [
     description: "Lighthouse Coast Sea",
   },
 ];
+(function () {
+  let instance;
+  const gallery = document.querySelector('.gallery');
+  gallery.innerHTML = createMarkup(images);
 
-let instance;
+  gallery.addEventListener('click', showLargeImg);
 
-const gallery = document.querySelector('.gallery');
-gallery.innerHTML = createMarkup(images);
-
-gallery.addEventListener('click', showLargeImg);
-
-function addEventListenerToDocument() {
-  document.addEventListener('keydown', closeModal);
-}
-
-function removeEventListenerFromDocument() {
-  document.removeEventListener('keydown', closeModal);
-}
-
-function closeModal(event) {
-  if (event.key === 'Escape' && instance) {
-    removeEventListenerFromDocument();
-    instance.close();
-  }
-}
-
-function showLargeImg(event) {
-  event.preventDefault();
-
-  const liEl = event.target.closest(".gallery-link");
-
-  if (!liEl) {
-    return;
+  function addEventListenerToDocument() {
+    document.addEventListener('keydown', closeModal);
   }
 
-  const original = liEl.getAttribute("href");
-  const description = liEl.querySelector("img").getAttribute("alt");
+  function removeEventListenerFromDocument() {
+    document.removeEventListener('keydown', closeModal);
+  }
 
-  instance = basicLightbox.create(`
+  function closeModal(event) {
+    if (event.key === 'Escape' && instance) {
+      removeEventListenerFromDocument();
+      instance.close();
+    }
+  }
+
+  function showLargeImg(event) {
+    event.preventDefault();
+
+    const liImg = event.target.closest(".gallery-image");
+
+    if (!liImg) {
+      return;
+    }
+
+    const original = event.target.dataset.source;
+    const description = event.target.getAttribute("alt");
+
+    instance = basicLightbox.create(`
     <div class="modal">
-      <img src="${original}" alt="${description}">
+      <img src="${original}" alt="${description}"/>
     </div>
   `);
 
-  instance.show();
+    instance.show();
 
-  addEventListenerToDocument();
-}
+    addEventListenerToDocument();
+  }
 
 
-function createMarkup(arr) {
-  return arr
-    .map(
-      ({ preview, original, description }) => `
+  function createMarkup(arr) {
+    return arr
+      .map(
+        ({ preview, original, description }) => `
   <li class="gallery-item">
     <a class="gallery-link" href="${original}">
          <img class="gallery-image" src="${preview}" data-source="${original}" alt="${description}" />
     </a>
   </li>
   `)
-    .join("");
-}
+      .join("");
+  }
+})();
